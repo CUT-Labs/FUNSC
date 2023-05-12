@@ -1,5 +1,8 @@
 /build-updates/
 /build/build/
+/build/assets/result.png
+/build/assets/result.svg
+/build/assets/taylor.png
 /build/FunctionToCircuit --debug.spec
 /build/FunctionToCircuit.spec
 /build/dist/

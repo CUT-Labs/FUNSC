@@ -6,7 +6,10 @@ except:
 finally:
     from pathlib import Path
     from tkinter import *
+
+    import tkinter.messagebox as messagebox
     from tkinter.scrolledtext import ScrolledText
+
     from math import *
     from mpmath import *
 
@@ -24,6 +27,8 @@ finally:
     from Function import *
 
     from cairosvg import svg2png
+
+    from ctypes import windll
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\jhuse\OneDrive - University of Kentucky\Research\FunctionToCircuit\GitHub\build-updates\build\assets\frame0")
@@ -197,15 +202,12 @@ def calculate():
         image_3_updater.image = photo
 
     else:
-        pass
-        # Need to figure out how to do error checking
-        entry_5.delete('1.0', END)
-        entry_5.insert(INSERT, "Function Type Not Supported!\n" +
-                       "Function: " + function.title + "\n" +
-                       "Around Point: " + function.point.__str__() + "\n" +
-                       "Degree Estimation: " + function.order.__str__() + "\n" +
-                       "Maclaurin Series: \n" +
-                       function.taylorString)
+        messagebox.showinfo("UK Function To Circuit Designer", "Error! The function you entered is not supported for these parameters:\n" +
+                                                               "-----------------------------------\n"
+                                                               "Function: " + functionStr.replace("**", "^") + "\n" +
+                                                               "Variable: " + variable + "\n" +
+                                                               "Degree: " + str(power-1) + "\n" +
+                                                               "Point Estimation: " + str(point))
 
 
 def clearEq():
@@ -251,6 +253,7 @@ def insertButton(button):
         entry_4.icursor(entry_4.index(INSERT) - 1)  # move cursor back 1
 
 
+# windll.shcore.SetProcessDpiAwareness(1)
 window = Tk()
 
 # generate favicon
@@ -278,6 +281,7 @@ canvas = Canvas(
 )
 
 canvas.place(x=0, y=0)
+
 canvas.create_rectangle(
     0.0,
     0.0,
