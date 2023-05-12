@@ -1,7 +1,8 @@
 /build-updates/
 /build/build/
-/build/FUNDNA --debug.spec
-/build/FUNDNA.spec
+/build/FunctionToCircuit --debug.spec
+/build/FunctionToCircuit.spec
 /build/dist/
 /build/dist/assets/
 /supporting materials/
+/Tkinter CLI.txt

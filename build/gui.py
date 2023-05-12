@@ -12,20 +12,26 @@ finally:
 
     import sympy
     import sympy as sp
-    from PIL import Image, ImageTk
     from sympy import sympify
+
+    import requests
+    from io import BytesIO
+    from PIL import Image, ImageTk
 
     from FuncTypes import *
     from Util import *
     from RearrangeType import *
     from Function import *
 
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path("assets")
+    from cairosvg import svg2png
 
+OUTPUT_PATH = Path(__file__).parent
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\jhuse\OneDrive - University of Kentucky\Research\FunctionToCircuit\GitHub\build-updates\build\assets\frame0")
+
+# default values
 variable = "x"
 point = 0
-power = 6
+power = 5
 functionStr = "exp(-x)"
 lExpress = ""
 lFunc = None
@@ -112,10 +118,9 @@ def calculate():
     function.generateCoeffs()
     if function.rearrangeType != RearrangeType.UNKNOWN:
         function.generateCircuit()
-        function.generateReactions()
 
         # Set Labels
-        # convert taylor polynomial coeff dictionary to expression - set label (entry_6)
+        # convert taylor polynomial coeff dictionary to expression - set label (entry_5)
         x = "x"
         expr = "$\displaystyle " + sympy.latex(sympify(function.taylorString)) + "$"
 
@@ -133,10 +138,10 @@ def calculate():
         img.load()
         img = img.resize((393, int((393 * img.size[1] / img.size[0]))), Image.BILINEAR)
         photo = ImageTk.PhotoImage(img)
-        entry_6.config(image=photo)
-        entry_6.image = photo
+        entry_5.config(image=photo)
+        entry_5.image = photo
 
-        # convert rearranged polynomial coeff dictionary to expression - set label (entry_7)
+        # convert rearranged polynomial coeff dictionary to expression - set label (entry_6)
         #exec(variable + " = sympy.symbols('" + variable + "')")
         #expr = "$\displaystyle " + sympy.latex(eval(function.rearrangeString)) + "$"  # sympify(function.rearrangeString, strict=True)
 
@@ -156,32 +161,44 @@ def calculate():
         #img.load()
         #img = img.resize((393, int((393 * img.size[1] / img.size[0]))), Image.BILINEAR)
         #photo = ImageTk.PhotoImage(img)
-        #entry_7.config(image=photo)
-        #entry_7.image = photo
-        entry_7.delete(0, END)
-        entry_7.insert(INSERT, function.rearrangeString)
+        #entry_6.config(image=photo)
+        #entry_6.image = photo
+        entry_6.delete(0, END)
+        entry_6.insert(INSERT, function.rearrangeString)
 
         # trace equation - set label (entry_8)
         function.generateTrace()
-        entry_8.delete(0, END)
-        entry_8.insert(INSERT, str(function.traceValue))
-
-        # generate crn - set label (entry_5)
-        entry_5.delete('1.0', END)
-        entry_5.insert(INSERT, function.CRN)
+        entry_7.delete(0, END)
+        entry_7.insert(INSERT, str(function.traceValue))
 
         # Update Circuit Diagram
-        baseWidth = 398
+        baseWidth = 908
+        baseHeight = 268
+        svg2png(url="assets/result.svg", write_to="assets/result.png", output_height=500)
         img = Image.open("assets/result.png")
+
+        # adjust size based on width (for bigger circuits)
         wpercent = (baseWidth / float(img.size[0]))
         hsize = int(float(img.size[1])*float(wpercent))
-        img = img.resize((baseWidth, hsize), Image.LANCZOS)
+
+        # adjust size based on height (for smaller circuits)
+        hpercent = (baseHeight / float(img.size[1]))
+        wsize = int(float(img.size[0])*float(hpercent))
+
+        # if the adjusted size is taller than the frame, use size based on height instead
+        if hsize > baseHeight:
+            img = img.resize((baseHeight, wsize), Image.LANCZOS)
+        else:
+            img = img.resize((baseWidth, hsize), Image.LANCZOS)
+
         photo = ImageTk.PhotoImage(img)
 
         image_3_updater.config(image=photo)
         image_3_updater.image = photo
 
     else:
+        pass
+        # Need to figure out how to do error checking
         entry_5.delete('1.0', END)
         entry_5.insert(INSERT, "Function Type Not Supported!\n" +
                        "Function: " + function.title + "\n" +
@@ -236,11 +253,16 @@ def insertButton(button):
 
 window = Tk()
 
-favicon = PhotoImage(file=relative_to_assets("UK logo-white.png"))
+# generate favicon
+# faviconURL_white = "https://i.gyazo.com/46f8159ba9cf00c29841f309498ef3cf.png"
+faviconURL_blue = "https://i.gyazo.com/0a5a8e0b41b060db1eacbceb234e47f2.png"
+faviconResponse = requests.get(faviconURL_blue)
+faviconIMGData = faviconResponse.content
+favicon = ImageTk.PhotoImage(Image.open(BytesIO(faviconIMGData)))
 
 # Setting icon of master window
 window.iconphoto(True, favicon)
-window.title("UK DNA Function Designer")
+window.title("UK Function to Circuit Designer")
 
 window.geometry("1400x750")
 window.configure(bg="#DCDDDE")
@@ -772,7 +794,9 @@ button_29.place(
     height=46.66668701171875
 )
 
-# uk logo
+#
+# IMAGE 1: UNIVERSITY OF KENTUCKY LOGO
+#
 image_image_1 = PhotoImage(
     file=relative_to_assets("image_1.png"))
 image_1 = canvas.create_image(
@@ -781,7 +805,9 @@ image_1 = canvas.create_image(
     image=image_image_1
 )
 
-# line
+#
+# IMAGE 2: DIVIDER LINE
+#
 image_image_2 = PhotoImage(
     file=relative_to_assets("image_2.png"))
 image_2 = canvas.create_image(
@@ -790,16 +816,7 @@ image_2 = canvas.create_image(
     image=image_image_2
 )
 
-# nsf logo
-image_image_4 = PhotoImage(
-    file=relative_to_assets("image_4.png"))
-image_4 = canvas.create_image(
-    266.0,
-    726.0,
-    image=image_image_4
-)
-
-# Bottom Text 1 - Variable
+# Variable Label
 canvas.create_text(
     30.625,
     535.888916015625,
@@ -809,19 +826,19 @@ canvas.create_text(
     font=("BitterRoman ExtraBold", 20 * -1)
 )
 
-# Bottom Text 2 - Point Estimation
+# Point Estimation Label
 canvas.create_text(
-    30.625,
+    27.125,
     571.6666870117188,
     anchor="nw",
-    text="Center:",
+    text="Point Est:",
     fill="#FFFFFF",
     font=("BitterRoman ExtraBold", 20 * -1)
 )
 
-# Bottom Text 3 - Degree of Rounding
+# Degree Label
 canvas.create_text(
-    30.625,
+    44.625,
     607.4444580078125,
     anchor="nw",
     text="Degree:",
@@ -829,7 +846,9 @@ canvas.create_text(
     font=("BitterRoman ExtraBold", 20 * -1)
 )
 
-# Degree of Rounding Entry
+#
+# ENTRY 1: TRACED VALUE ENTRY
+#
 entry_image_1 = PhotoImage(
     file=relative_to_assets("entry_1.png"))
 entry_bg_1 = canvas.create_image(
@@ -840,6 +859,7 @@ entry_bg_1 = canvas.create_image(
 entry_1 = Entry(
     bd=0,
     bg="#DCDDDE",
+    fg="#000716",
     highlightthickness=0,
     justify="center",
     font=("BitterRoman ExtraBold", 15)
@@ -850,9 +870,11 @@ entry_1.place(
     width=56.875,
     height=20.5555419921875
 )
-entry_1.insert(0, "5")
+entry_1.insert(0, power)
 
-# Point Estimation Text Box
+#
+# ENTRY 2: POINT ESTIMATION ENTRY
+#
 entry_image_2 = PhotoImage(
     file=relative_to_assets("entry_2.png"))
 entry_bg_2 = canvas.create_image(
@@ -863,6 +885,7 @@ entry_bg_2 = canvas.create_image(
 entry_2 = Entry(
     bd=0,
     bg="#DCDDDE",
+    fg="#000716",
     highlightthickness=0,
     justify="center",
     font=("BitterRoman ExtraBold", 15)
@@ -873,9 +896,11 @@ entry_2.place(
     width=56.875,
     height=20.5555419921875
 )
-entry_2.insert(0, 0)
+entry_2.insert(0, point)
 
-# Variable Entry
+#
+# ENTRY 3: VARIABLE ENTRY
+#
 entry_image_3 = PhotoImage(
     file=relative_to_assets("entry_3.png"))
 entry_bg_3 = canvas.create_image(
@@ -886,6 +911,7 @@ entry_bg_3 = canvas.create_image(
 entry_3 = Entry(
     bd=0,
     bg="#DCDDDE",
+    fg="#000716",
     highlightthickness=0,
     justify="center",
     font=("BitterRoman ExtraBold", 15)
@@ -896,9 +922,11 @@ entry_3.place(
     width=56.875,
     height=20.5555419921875
 )
-entry_3.insert(0, "x")
+entry_3.insert(0, variable)
 
-# User Input Equation
+#
+# ENTRY 4: User Input Function Entry
+#
 entry_image_4 = PhotoImage(
     file=relative_to_assets("entry_4.png"))
 entry_bg_4 = canvas.create_image(
@@ -909,9 +937,8 @@ entry_bg_4 = canvas.create_image(
 entry_4 = Entry(
     bd=0,
     bg="#B1C9E8",
+    fg="#000716",
     highlightthickness=0,
-    borderwidth=50,
-    relief=FLAT,
     font=("BitterRoman ExtraBold", 15)
 )
 entry_4.place(
@@ -920,10 +947,20 @@ entry_4.place(
     width=1133.0,
     height=33.0
 )
+entry_4.insert(0, functionStr)
 
-entry_4.insert(0, "exp(-x)")
+#
+# IMAGE 3: CIRCUIT DIAGRAM BACKGROUND
+#
+image_image_3 = PhotoImage(
+    file=relative_to_assets("image_3.png"))
+image_3 = canvas.create_image(
+    908.0,
+    268.0,
+    image=image_image_3
+)
 
-# graph picture
+# diagram picture
 image_3_updater = Label(
     bd=0,
     bg="#fff",
@@ -933,13 +970,13 @@ image_3_updater = Label(
     font=("BitterRoman ExtraBold", 15)
 )
 image_3_updater.place(
-    x=1002,
-    y=78,
-    width=398.0,
-    height=354.0
+    x=444,
+    y=124,
+    width=908.0,
+    height=268.0
 )
 
-# Generated Maclaurin Series Output Label
+# Maclaurin Series Estimate
 canvas.create_text(
     27.0,
     90.0,
@@ -949,76 +986,49 @@ canvas.create_text(
     font=("BitterRoman ExtraBold", 24 * -1)
 )
 
-# Generated Rearranged Equation Output Label
+# Rearranged Estimate Label
 canvas.create_text(
     27.0,
-    235.0,
+    229.0,
     anchor="nw",
     text="Rearranged Estimate:",
     fill="#1F2C5E",
     font=("BitterRoman ExtraBold", 24 * -1)
 )
 
-# Generated Value at Point and Power Output Label
+# Traced Value at Point Label
 canvas.create_text(
     27.0,
-    394.0,
+    382.0,
     anchor="nw",
-    text="Traced Value at Zero:",
+    text="Traced Value at Point:",
     fill="#1F2C5E",
     font=("BitterRoman ExtraBold", 24 * -1)
 )
 
-# Generated Chemical Reaction Network (CRN) Output Label
+# Circuit Diagram Label
 canvas.create_text(
     444.0,
     90.0,
     anchor="nw",
-    text="Chemical Reaction Network (CRN):",
+    text="Circuit Diagram",
     fill="#1F2C5E",
     font=("BitterRoman ExtraBold", 24 * -1)
 )
 
-# Generated Chemical Reaction Network (CRN) Output Area
-# crn_frame = Frame(window, width=531.0, height=294.0, bg="#000000")
-
+#
+# ENTRY 5: MACLAURIN SERIES
+#
 entry_image_5 = PhotoImage(
     file=relative_to_assets("entry_5.png"))
+
 entry_bg_5 = canvas.create_image(
-    709.5,
-    269.0,
+    223.5,
+    160.0,
     image=entry_image_5
 )
-entry_5 = ScrolledText(
-    # width=64, Scrolled Text Size
-    # height=19, Scrolled Text Size
-    bd=0,
-    bg="#C4C4C4",
-    fg="#1F2C5E",
-    highlightthickness=0,
-    font=("BitterRoman ExtraBold", 13)
-    #    state="disabled",
-)
 
-entry_5.place(
-    x=444.0,
-    y=121.0,
-    width=531.0,
-    height=294.0
-)
-entry_5.insert(INSERT, "Enter a function in the calculator!")
-
-# Maclaurin Series Output Area
-entry_image_6 = PhotoImage(
-    file=relative_to_assets("entry_6.png"))
-
-entry_bg_6 = canvas.create_image(
-    223.5,
-    179.0,
-    image=entry_image_6
-)
-
-entry_6 = Label(
+entry_5 = Label(
     bd=0,
     bg="#C4C4C4",
     highlightthickness=0,
@@ -1026,70 +1036,65 @@ entry_6 = Label(
     justify="center",
     font=("BitterRoman ExtraBold", 15)
 )
-
-entry_6.place(
+entry_5.place(
     x=27.0,
-    y=143.0,
+    y=124.0,
     width=393.0,
     height=70.0
 )
+# entry_5.insert(0, "5")
 
-# Rearranged Estimate Output Area
-entry_image_7 = PhotoImage(
-    file=relative_to_assets("entry_7.png"))
-entry_bg_7 = canvas.create_image(
+#
+# ENTRY 6: REARRANGED ESTIMATE
+#
+entry_image_6 = PhotoImage(
+    file=relative_to_assets("entry_6.png"))
+entry_bg_6 = canvas.create_image(
     223.5,
-    326.0,
-    image=entry_image_7
+    301.0,
+    image=entry_image_6
 )
-#entry_7 = Label(
-#    bd=0,
-#    bg="#C4C4C4",
-#    highlightthickness=0,
-#    #    state="disabled",
-#    justify="center",
-#    font=("BitterRoman ExtraBold", 15)
-#)
-entry_7 = Entry(
+entry_6 = Entry(
     bd=0,
     bg="#C4C4C4",
-    disabledbackground="#c4c4c4",
-    disabledforeground="#1F2C5E",
-    #state="disabled",
+    fg="#000716",
+    highlightthickness=0,
     justify="center",
     font=("BitterRoman ExtraBold", 12)
 )
-entry_7.place(
+entry_6.place(
     x=27.0,
-    y=290.0,
+    y=265.0,
     width=393.0,
     height=70.0
 )
+# entry_6.insert(0, "6")
 
-# Traced Value at Point Output Area
-entry_image_8 = PhotoImage(
-    file=relative_to_assets("entry_8.png"))
-entry_bg_8 = canvas.create_image(
+#
+# ENTRY 7: TRACED VALUE
+#
+entry_image_7 = PhotoImage(
+    file=relative_to_assets("entry_7.png"))
+entry_bg_7 = canvas.create_image(
     350.0,
-    407.5,
-    image=entry_image_8
+    395.5,
+    image=entry_image_7
 )
-entry_8 = Entry(
+entry_7 = Entry(
     bd=0,
     bg="#C4C4C4",
-    disabledbackground="#c4c4c4",
-    disabledforeground="#1F2C5E",
-    #    state="disabled",
+    fg="#000716",
+    highlightthickness=0,
     justify="center",
     font=("BitterRoman ExtraBold", 15)
 )
-entry_8.place(
+entry_7.place(
     x=280.0,
-    y=391.0,
+    y=379.0,
     width=140.0,
     height=31.0
 )
-# entry_8.insert(0, "test1")
+# entry_7.insert(0, "7")
 
 # Calculate Button
 button_image_32 = PhotoImage(
@@ -1159,21 +1164,23 @@ button_31.place(
 )
 
 # Supporting Statement
+
 canvas.create_text(
-    296.0,
+    474.0,
     715.0,
     anchor="nw",
-    text="This project is supported by the National Science Foundation (NSF) and the University of Kentucky.",
+    text="This project is supported by the University of Kentucky.",
     fill="#FFFFFF",
     font=("Caladea Regular", 20 * -1)
 )
 
-image_image_5 = PhotoImage(
-    file=relative_to_assets("image_5.png"))
-image_5 = canvas.create_image(
-    420.0,
-    38.0,
-    image=image_image_5
+canvas.create_text(
+    263.0,
+    0.0,
+    anchor="nw",
+    text="FunctionToCircuit",
+    fill="#FFFFFF",
+    font=("BitterRoman ExtraBold", 24 * -1)
 )
 try:
     pyi_splash.close()

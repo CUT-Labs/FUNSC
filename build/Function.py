@@ -15,7 +15,6 @@ class Function:
         self.taylor_coeffs = None
         self.taylorString = None
         self.rearrangeString = None
-        self.CRN = None
         self.traceString = None
         self.traceValue = 0.0
         self.rearrangeType = None
@@ -165,10 +164,6 @@ class Function:
 
         if self.rearrangeType != RearrangeType.UNKNOWN:
             show_circuit(self)
-
-    def generateReactions(self):
-        if self.rearrangeType != RearrangeType.UNKNOWN:
-            self.CRN = make_reactions(self)
 
     def generateTrace(self):
         if self.rearrangeType == RearrangeType.DOUBLE_NAND:

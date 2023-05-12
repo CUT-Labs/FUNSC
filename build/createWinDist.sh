@@ -1,8 +1,8 @@
 #!/bin/bash
 rm -r build
 rm -r dist
-rm "FUNDNA.spec"
-rm "FUNDNA --debug.spec"
+rm "FunctionToCircuit.spec"
+rm "FunctionToCircuit --debug.spec"
 mkdir dist
 cd dist
 mkdir assets
@@ -20,6 +20,10 @@ python3 -m pip install --upgrade sympy
 python3 -m pip install --upgrade Pillow
 python3 -m pip install --upgrade mpmath
 python3 -m pip install --upgrade schemdraw
+python3 -m pip install --upgrade pycairo
+python3 -m pip install --upgrade pipwin
+python3 -m pipwin install cairocffi
+python3 -m pip install --upgrade cairosvg
 
-pyinstaller gui.py Function.py FuncTypes.py GateTypes.py NotGateTypes.py RearrangeType.py Util.py --name "FUNDNA --debug" --clean --onefile --icon "assets/UK logo-white.png" --add-data "assets/*.png;assets" --hidden-import=scipy --hidden-import=networkx --hidden-import=matplotlib --hidden-import=PIL --hidden-import=PIL._imagingtk --hidden-import=PIL._tkinter_finder --hidden-import=pathlib --hidden-import=sympy --hidden-import=mpmath --hidden-import=tk --hidden-import=schemdraw --debug=imports
-pyinstaller gui.py Function.py FuncTypes.py GateTypes.py NotGateTypes.py RearrangeType.py Util.py --name "FUNDNA" --clean -w --onefile --icon "assets/UK logo-web.png" --splash "assets/FUNDNA Splash Page.png" --add-data "assets/*.png;assets" --hidden-import=scipy --hidden-import=networkx --hidden-import=matplotlib --hidden-import=PIL --hidden-import=PIL._imagingtk --hidden-import=PIL._tkinter_finder --hidden-import=pathlib --hidden-import=sympy --hidden-import=mpmath --hidden-import=tk --hidden-import=schemdraw --debug=imports
+pyinstaller gui.py Function.py FuncTypes.py GateTypes.py NotGateTypes.py RearrangeType.py Util.py --name "FunctionToCircuit --debug" --clean --onefile --icon "assets/frame0/UK logo-white.png" --add-data "assets/frame0/*.png;assets/frame0" --hidden-import=scipy --hidden-import=networkx --hidden-import=matplotlib --hidden-import=PIL --hidden-import=PIL._imagingtk --hidden-import=PIL._tkinter_finder --hidden-import=pathlib --hidden-import=sympy --hidden-import=mpmath --hidden-import=tk --hidden-import=schemdraw --debug=imports
+pyinstaller gui.py Function.py FuncTypes.py GateTypes.py NotGateTypes.py RearrangeType.py Util.py --name "FunctionToCircuit" --clean -w --onefile --icon "assets/frame0/UK logo-web.png" --splash "assets/frame0/UK ECE mark.png" --add-data "assets/frame0/*.png;assets/frame0" --hidden-import=scipy --hidden-import=networkx --hidden-import=matplotlib --hidden-import=PIL --hidden-import=PIL._imagingtk --hidden-import=PIL._tkinter_finder --hidden-import=pathlib --hidden-import=sympy --hidden-import=mpmath --hidden-import=tk --hidden-import=schemdraw --debug=imports
