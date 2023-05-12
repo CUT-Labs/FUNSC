@@ -137,7 +137,7 @@ def make_taylor_coeffs(func):
         if func.isSinusoidal():
             coeffs[n] = derivative(func.function, func.point, n=n, order=order, dx=1e-2) / factorial(n)
         else:
-            coeffs[n] = derivative(func.function, func.point, n=n, order=order, dx=1e-3) / factorial(n)
+            coeffs[n] = derivative(func.function, func.point, n=n, order=order, dx=1e-2) / factorial(n)
     return coeffs
 
 
