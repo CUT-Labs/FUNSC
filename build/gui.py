@@ -31,7 +31,7 @@ finally:
     from ctypes import windll
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\jhuse\OneDrive - University of Kentucky\Research\FunctionToCircuit\GitHub\build-updates\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\jhuse\OneDrive - University of Kentucky\Research\FunctionToCircuit\GitHub\build\assets\frame0")
 
 # default values
 variable = "x"
@@ -1167,22 +1167,30 @@ button_31.place(
     height=46.66668701171875
 )
 
-# Supporting Statement
+# nsf logo
+image_image_4 = PhotoImage(
+    file=relative_to_assets("image_4.png"))
+image_4 = canvas.create_image(
+    266.0,
+    726.0,
+    image=image_image_4
+)
 
+# Supporting Statement
 canvas.create_text(
-    474.0,
+    296.0,
     715.0,
     anchor="nw",
-    text="This project is supported by the University of Kentucky.",
+    text="This project is supported by the National Science Foundation (NSF) and the University of Kentucky.",
     fill="#FFFFFF",
     font=("Caladea Regular", 20 * -1)
 )
 
 canvas.create_text(
     263.0,
-    0.0,
+    23.5,
     anchor="nw",
-    text="FunctionToCircuit",
+    text="FUNSC",
     fill="#FFFFFF",
     font=("BitterRoman ExtraBold", 24 * -1)
 )
