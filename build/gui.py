@@ -60,7 +60,7 @@ def updateVariables():
 
     functionStr = entry_4.get().replace("^", "**")
     variable = entry_3.get()
-    point = int(entry_2.get())
+    point = float(entry_2.get())
     power = int(entry_1.get()) + 1
     lExpress = "lambda " + variable + ": " + functionStr
     # lambda x: sin(x)
