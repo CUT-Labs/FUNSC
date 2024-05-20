@@ -6,7 +6,7 @@
 --->
 <img src="https://i.gyazo.com/962a0a13ee9d910deacdea456f514f85.png" height=100px alt="University of Kentucky College of Engineering Logo">
 
-# FunctionToCircuit
+# FunctionToStochasticCircuit
 This project uses stochastic logic gates to create a circuit that allows us to compute values of different mathematical functions.
 
 ## Important Information
@@ -23,7 +23,7 @@ Double-NAND Expansion Scholarly Article DOI: http://dx.doi.org/10.1145/3060403.3
 > University of Kentucky | http://salehi.engr.uky.edu/
 #### Affiliation
 > **Note** \
-> This project is supported by the University of Kentucky's College of Engineering.
+> This project is supported by National Science Fundation and the University of Kentucky's College of Engineering.
 #### Descrption
 This project uses stochastic logic gates to create a circuit that allows us to compute values of different mathematical functions.
 
