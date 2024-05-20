@@ -202,7 +202,7 @@ def calculate():
         image_3_updater.image = photo
 
     else:
-        messagebox.showinfo("UK Function To Circuit Designer", "Error! The function you entered is not supported for these parameters:\n" +
+        messagebox.showinfo("UK FUNSC Designer", "Error! The function you entered is not supported for these parameters:\n" +
                                                                "-----------------------------------\n"
                                                                "Function: " + functionStr.replace("**", "^") + "\n" +
                                                                "Variable: " + variable + "\n" +
@@ -265,7 +265,7 @@ favicon = ImageTk.PhotoImage(Image.open(BytesIO(faviconIMGData)))
 
 # Setting icon of master window
 window.iconphoto(True, favicon)
-window.title("UK Function to Circuit Designer")
+window.title("UK FUNSC Designer")
 
 window.geometry("1400x750")
 window.configure(bg="#DCDDDE")
