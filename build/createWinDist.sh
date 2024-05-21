@@ -12,6 +12,7 @@ curl -o "dist/assets/rearranged.png" https://gyazo.com/f5846f1ed0e124ad66cb56904
 
 python3 -m pip install --upgrade pip
 
+python3 -m pip install --upgrade pyinstaller
 python3 -m pip install --upgrade scipy
 python3 -m pip install --upgrade networkx
 python3 -m pip install --upgrade matplotlib

@@ -412,8 +412,7 @@ def horner_to_circuit(func):
                 for index in transCoeffs:
                     print(f"Processing coefficient index: {index}")
 
-                    if list(coeffs.keys())[
-                        (len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx^2, where j is coeff)
+                    if list(coeffs.keys())[(len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx^2, where j is coeff)
                         # AND x with itself (x^2)
                         drawing, prevGate = AddBaseGate(drawing, gateIndex, GateTypes.AND,
                                                         variable, NotGateTypes.INPUT,

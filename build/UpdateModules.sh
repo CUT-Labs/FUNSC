@@ -9,3 +9,4 @@ python3 -m pip install --upgrade Pillow
 python3 -m pip install --upgrade mpmath
 python3 -m pip install --upgrade schemdraw==0.17
 python3 -m pip install --upgrade pipwin
+python3 -m pip install --upgrade pyinstaller
