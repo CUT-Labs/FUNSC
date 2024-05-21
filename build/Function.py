@@ -1,6 +1,10 @@
 from Util import *
 from FuncTypes import FuncTypes
 from RearrangeType import RearrangeType
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_svg
+
+matplotlib.use('TkAgg')
 
 
 class Function:
@@ -161,6 +165,17 @@ class Function:
             self.circuit, self.circuitGates = doubleNAND_to_circuit(self)
         if self.rearrangeType == RearrangeType.HORNER:
             self.circuit, self.circuitGates = horner_to_circuit(self)
+
+        self.circuit.save('assets/result.svg')
+
+        print("Circuit returned to function!")
+
+        if self.circuit is None and self.circuitGates is None:
+            raise Exception("so actually circuit drawing nor gates made it back to the function object")
+        elif self.circuit is None:
+            raise Exception("idk what's happening, but the circuit drawing didn't make it back to the function object")
+        elif self.circuitGates is None:
+            raise Exception("idk what's happening, but the gates didn't make it back to the function object")
 
         if self.rearrangeType != RearrangeType.UNKNOWN:
             show_circuit(self)

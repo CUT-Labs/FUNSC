@@ -2,7 +2,10 @@ from collections import defaultdict
 from math import factorial
 
 import matplotlib.pyplot as plt
-import networkx as nx
+import matplotlib.backends.backend_svg
+
+matplotlib.use('TkAgg')
+
 from scipy.misc import derivative
 from scipy.special import comb
 
@@ -304,7 +307,9 @@ def doubleNAND_to_circuit(func):
     output = 'f(' + variable + ')'
     outputWithFormatting = r'$f(' + variable + ') = ' + func.title + '$'
 
-    with schemdraw.Drawing() as drawing:
+    schemdraw.use('matplotlib')
+
+    with schemdraw.Drawing(file="assets/result.png", show=False) as drawing:
         if func.isSinusoidal():  # uses x^2
             coeffs = dict(reversed(list(func.doubleNAND_coeffs.items())))
             xSquaredGate = None
@@ -392,97 +397,89 @@ def horner_to_circuit(func):
     gates = []
     variable = func.variable.upper()
     output = 'f(' + variable + ')'
-    outputWithFormatting = r'$f(' + variable + ') = ' + func.title + '$'
     coeffs = func.horner_coeffs
 
     transCoeffs = reversed(coeffs)
 
-    with schemdraw.Drawing() as drawing:
-        if func.isSinusoidal():  # only uses x^2
-            xSquaredGate = None
-            for index in transCoeffs:
-                if list(coeffs.keys())[
-                    (len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx^2, where j is coeff)
-                    # AND x with itself (x^2)
-                    drawing, prevGate = AddBaseGate(drawing, gateIndex, GateTypes.AND,
-                                                    variable, NotGateTypes.INPUT,
-                                                    variable, NotGateTypes.INPUT, True)
-                    xSquaredGate = prevGate
-                    gates.append(prevGate)
-                    gateIndex = gateIndex + 1
+    schemdraw.use('matplotlib')
 
-                    # NAND prev result with next coeff last coefficient
-                    drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
-                                                     coeffs[index], NotGateTypes.CONSTANT,
-                                                     None, None, False, False)
-                    gateIndex = gateIndex + 1
+    print("Starting drawing...")
+    with schemdraw.Drawing(file="assets/result.png", show=False) as drawing:
+        print("Drawing started...")
+        try:
+            if func.isSinusoidal():  # only uses x^2
+                xSquaredGate = None
+                for index in transCoeffs:
+                    print(f"Processing coefficient index: {index}")
 
-                else:
-                    if index != 1 and index != 0:  # In between groupings (next few 1-jx^2, where j is coeff)
-                        # AND prev result (gIndex - 2) with x^2 value
-                        drawing, gates = AddGateFromGate(drawing, gates, xSquaredGate, GateTypes.AND, gateIndex,
-                                                         None, None,
-                                                         None, None, True, False)
+                    if list(coeffs.keys())[
+                        (len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx^2, where j is coeff)
+                        # AND x with itself (x^2)
+                        drawing, prevGate = AddBaseGate(drawing, gateIndex, GateTypes.AND,
+                                                        variable, NotGateTypes.INPUT,
+                                                        variable, NotGateTypes.INPUT, True)
+                        xSquaredGate = prevGate
+                        gates.append(prevGate)
                         gateIndex = gateIndex + 1
 
-                        # NAND prev result with next coeff
+                        # NAND prev result with next coeff last coefficient
                         drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
                                                          coeffs[index], NotGateTypes.CONSTANT,
                                                          None, None, False, False)
                         gateIndex = gateIndex + 1
 
-                    else:  # last grouping where case 1: jx(1-kx^2(...)) is last group (i == 1), or case 2: 1-jx^2(...)
-                        # is last group (i == 0)
-                        if index == 1:  # case 1, last term, sin(x)
-                            # AND prev result with X
-                            drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                    else:
+                        if index != 1 and index != 0:  # In between groupings (next few 1-jx^2, where j is coeff)
+                            # AND prev result (gIndex - 2) with x^2 value
+                            drawing, gates = AddGateFromGate(drawing, gates, xSquaredGate, GateTypes.AND, gateIndex,
                                                              None, None,
-                                                             None, None, False, True)
+                                                             None, None, True, False)
                             gateIndex = gateIndex + 1
 
-                            # AND prev result with first coeff
-                            if not FrivelousNumber(coeffs[index]):
-                                drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
-                                                                 coeffs[index], NotGateTypes.CONSTANT,
-                                                                 None, None, False, False)
-                                gateIndex = gateIndex + 1
-
-                        else:  # case 2, index == 0, last term, cos(x)
-                            # AND prev result with first coeff
-                            if not FrivelousNumber(coeffs[index]):
-                                drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
-                                                                 coeffs[index], NotGateTypes.CONSTANT,
-                                                                 None, None, False, False)
-                                gateIndex = gateIndex + 1
-
-        else:  # only uses x^1
-            for index in transCoeffs:
-                if list(coeffs.keys())[(len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx, where j is coeff)
-                    # NAND X and last coeff
-                    drawing, prevGate = AddBaseGate(drawing, gateIndex, GateTypes.NAND,
-                                                    coeffs[index], NotGateTypes.CONSTANT,
-                                                    variable, NotGateTypes.INPUT, False)
-                    gates.append(prevGate)
-                    gateIndex = gateIndex + 1
-
-                else:
-                    if index != 1 and index != 0:  # In between groupings (next few 1-jx, where j is coeff)
-                        if not FrivelousNumber(coeffs[index]):
-                            # AND prev result with next coeff
-                            drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                            # NAND prev result with next coeff
+                            drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
                                                              coeffs[index], NotGateTypes.CONSTANT,
                                                              None, None, False, False)
                             gateIndex = gateIndex + 1
 
-                        # NAND prev result with X
-                        drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
-                                                         None, None,
-                                                         None, None, False, True)
+                        else:  # last grouping where case 1: jx(1-kx^2(...)) is last group (i == 1), or case 2: 1-jx^2(...)
+                            # is last group (i == 0)
+                            if index == 1:  # case 1, last term, sin(x)
+                                # AND prev result with X
+                                drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                                                                 None, None,
+                                                                 None, None, False, True)
+                                gateIndex = gateIndex + 1
+
+                                # AND prev result with first coeff
+                                if not FrivelousNumber(coeffs[index]):
+                                    drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                                                                     coeffs[index], NotGateTypes.CONSTANT,
+                                                                     None, None, False, False)
+                                    gateIndex = gateIndex + 1
+
+                            else:  # case 2, index == 0, last term, cos(x)
+                                # AND prev result with first coeff
+                                if not FrivelousNumber(coeffs[index]):
+                                    drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                                                                     coeffs[index], NotGateTypes.CONSTANT,
+                                                                     None, None, False, False)
+                                    gateIndex = gateIndex + 1
+
+            else:  # only uses x^1
+                for index in transCoeffs:
+                    print(f"Processing coefficient index: {index}")
+
+                    if list(coeffs.keys())[(len(coeffs) - 1)] == index:  # First grouping (innermost 1-jx, where j is coeff)
+                        # NAND X and last coeff
+                        drawing, prevGate = AddBaseGate(drawing, gateIndex, GateTypes.NAND,
+                                                        coeffs[index], NotGateTypes.CONSTANT,
+                                                        variable, NotGateTypes.INPUT, False)
+                        gates.append(prevGate)
                         gateIndex = gateIndex + 1
 
-                    else:  # Last grouping, where case 1: jx(...) is last group (i == 1), or case 2: j(1-kx(...)) is last
-                        # group (i == 1)
-                        if 0 not in list(coeffs.keys()):  # case 1 - jx(...)
+                    else:
+                        if index != 1 and index != 0:  # In between groupings (next few 1-jx, where j is coeff)
                             if not FrivelousNumber(coeffs[index]):
                                 # AND prev result with next coeff
                                 drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
@@ -490,40 +487,77 @@ def horner_to_circuit(func):
                                                                  None, None, False, False)
                                 gateIndex = gateIndex + 1
 
-                            # AND prev output with X
-                            drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                            # NAND prev result with X
+                            drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
                                                              None, None,
                                                              None, None, False, True)
+                            gateIndex = gateIndex + 1
 
-                        else:  # case 2 - j(1-kx(...))
-                            if index == 1:
+                        else:  # Last grouping, where case 1: jx(...) is last group (i == 1), or case 2: j(1-kx(...)) is last
+                            # group (i == 1)
+                            if 0 not in list(coeffs.keys()):  # case 1 - jx(...)
                                 if not FrivelousNumber(coeffs[index]):
                                     # AND prev result with next coeff
                                     drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
                                                                      coeffs[index], NotGateTypes.CONSTANT,
                                                                      None, None, False, False)
-                                    prevGate = gates[-1]
                                     gateIndex = gateIndex + 1
 
-                                # NAND prev result with X
-                                drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
+                                # AND prev output with X
+                                drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
                                                                  None, None,
                                                                  None, None, False, True)
-                                gateIndex = gateIndex + 1
 
-                            else:  # index == 0
-                                if not FrivelousNumber(coeffs[index]):
-                                    # AND prev result with next coeff
-                                    drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
-                                                                     coeffs[index], NotGateTypes.CONSTANT,
-                                                                     None, None, False, False)
+                            else:  # case 2 - j(1-kx(...))
+                                if index == 1:
+                                    if not FrivelousNumber(coeffs[index]):
+                                        # AND prev result with next coeff
+                                        drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                                                                         coeffs[index], NotGateTypes.CONSTANT,
+                                                                         None, None, False, False)
+                                        prevGate = gates[-1]
+                                        gateIndex = gateIndex + 1
+
+                                    # NAND prev result with X
+                                    drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.NAND, gateIndex,
+                                                                     None, None,
+                                                                     None, None, False, True)
                                     gateIndex = gateIndex + 1
 
-    drawing += gates[-1].gate.label(outputWithFormatting[0:5] + '$', 'out')
-    gates[-1].outputs.append(output)
-    gates[-1].outputTypes.append(NotGateTypes.OUTPUT)
+                                else:  # index == 0
+                                    if not FrivelousNumber(coeffs[index]):
+                                        # AND prev result with next coeff
+                                        drawing, gates = AddGateFromGate(drawing, gates, gates[0], GateTypes.AND, gateIndex,
+                                                                         coeffs[index], NotGateTypes.CONSTANT,
+                                                                         None, None, False, False)
+                                        gateIndex = gateIndex + 1
 
-    return drawing, gates
+            print("Finishing up circuit drawing...")
+            drawing += gates[-1].gate.label(output, 'out')
+            print("...finished")
+
+            # schemdraw now saves through schemdraw.Drawing() initialization
+            # try:
+            #     print("Saving circuit...")
+            #     drawing.save("assets/result.svg")
+            #     print("...saved!")
+            # except Exception as e:
+            #     print("There is an issue with saving the schemdraw schematic")
+            #     print(e)
+
+            gates[-1].outputs.append(output)
+            gates[-1].outputTypes.append(NotGateTypes.OUTPUT)
+
+            print("Returning to function object")
+            return drawing, gates
+
+        except Exception as e:
+            print("An error occurred while generating the circuit.")
+            print(e)
+            return None, None
+
+    print("Error occurred...")
+    return None, None
 
 
 def FrivelousNumber(number):
@@ -534,7 +568,6 @@ def FrivelousNumber(number):
 
 
 def show_circuit(func):
-    func.circuit.save("assets/result.svg")
     for gate in func.circuitGates:
         PrintGateInfo(gate)
     # func.circuit.draw()

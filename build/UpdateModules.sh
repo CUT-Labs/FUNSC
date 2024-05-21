@@ -5,8 +5,8 @@ python3 -m pip install --upgrade tk
 python3 -m pip install --upgrade sympy
 python3 -m pip install --upgrade Pillow
 python3 -m pip install --upgrade mpmath
-python3 -m pip install --upgrade schemdraw
+python3 -m pip install --upgrade schemdraw==0.17
 python3 -m pip install --upgrade pycairo
 python3 -m pip install --upgrade pipwin
-python3 -m pipwin install cairocffi
-python3 -m pip install --upgrade cairosvg
+python3 -m pip install svglib
+python3 -m pip install tksvg

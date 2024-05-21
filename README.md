@@ -6,8 +6,10 @@
 --->
 <img src="https://i.gyazo.com/962a0a13ee9d910deacdea456f514f85.png" height=100px alt="University of Kentucky College of Engineering Logo">
 
-# FunctionToStochasticCircuit
+# FUNSC
 This project uses stochastic logic gates to create a circuit that allows us to compute values of different mathematical functions.
+
+NOTE: When using FUNSC for the first time, please run the "UpdateModules.sh" script to ensure all correct addons are used.
 
 ## Important Information
 #### Background

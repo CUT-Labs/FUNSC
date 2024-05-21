@@ -1,6 +1,9 @@
 import schemdraw
 from schemdraw import logic
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_svg
 
+matplotlib.use('TkAgg')
 # from schemdraw.parsing import logicparse
 
 # with logicparse('(a and b) and (y nand x)', outlabel='$f(x)$') as d:
@@ -14,7 +17,9 @@ from schemdraw import logic
 #      d += logic.Line().at(b.in2).tox(a.in2.x-.5).label('a', 'left')
 
 # logic gate drawing of (x^2)/10 + x/15 + 4/5
-with schemdraw.Drawing() as d:
+schemdraw.use('matplotlib')
+
+with schemdraw.Drawing(file="assets/my_circuit.png") as d:
     d += (g1 := logic.Nand().right().label('0.75', 'in1').label('X', 'in2'))
     d += g1.label('G1', 'center')
     d += (g2 := logic.Nand().at(g1.out).right().anchor('in2').label('0.6667', 'in1', ofst=(0, 0.5)))
@@ -26,7 +31,6 @@ with schemdraw.Drawing() as d:
     d += logic.Wire('n', k=-0.5).at(g1.out).to(g3.in2)
 
 d.draw()
-d.save('my_circuit.svg')
 
 for elem in d.elements:
     if type(elem) is schemdraw.logic.logic.And or type(elem) is schemdraw.logic.logic.Nand:

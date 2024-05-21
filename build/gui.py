@@ -26,9 +26,12 @@ finally:
     from RearrangeType import *
     from Function import *
 
-    from cairosvg import svg2png
-
     from ctypes import windll
+
+    import matplotlib.pyplot as plt
+    import matplotlib.backends.backend_svg
+
+    matplotlib.use('TkAgg')
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\jhuse\OneDrive - University of Kentucky\Research\FunctionToCircuit\GitHub\build\assets\frame0")
@@ -179,7 +182,19 @@ def calculate():
         # Update Circuit Diagram
         baseWidth = 908
         baseHeight = 268
-        svg2png(url="assets/result.svg", write_to="assets/result.png", output_height=500)
+
+        # from svglib.svglib import svg2rlg
+        # from reportlab.graphics import renderPM
+        # print("Rendering generated circuit diagram...")
+        # drawing = svg2rlg("assets/result.svg")
+        # print("\t...rendered!")
+        # print("Converting to PNG...")
+        #
+        # with open('assets/result.png', 'wb') as f:
+        #     renderPM.drawToFile(drawing, f, fmt="PNG")
+        #
+        # print("\t...converted!")
+
         img = Image.open("assets/result.png")
 
         # adjust size based on width (for bigger circuits)
@@ -197,6 +212,8 @@ def calculate():
             img = img.resize((baseWidth, hsize), Image.LANCZOS)
 
         photo = ImageTk.PhotoImage(img)
+
+        print(f"PNG Rendered Dimensions: {img.size[0]} x {img.size[1]}")
 
         image_3_updater.config(image=photo)
         image_3_updater.image = photo
